@@ -50,12 +50,9 @@ module.exports = function (issuesdb, indexdb, issue, cb) {
       .map(function (token) {
         if (token) return token[0]
       })
-    search(indexdb, issuesdb, keywords, 11, function (err, result) {
+    search(indexdb, issuesdb, keywords, 11, function (err, issues) {
       if (err) return cb(err)
-      var list = result.map(function (issue) {
-        return issue.number
-      })
-      cb(null, list)
+      cb(null, issues, keywords)
     })
   }
 }
