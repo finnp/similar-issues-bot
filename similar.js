@@ -12,7 +12,12 @@ var tokenizer = new Transform({
   }
 })
 
-module.exports = function (issuesdb, indexdb, issue, cb) {
+module.exports = function (opts, cb) {
+  var issuesdb = opts.issuesdb
+  var indexdb = opts.indexdb
+  var issue = opts.issue
+  var numberOfKeywords = opts.numberOfKeywords || 15
+  var numberOfResults = opts.numberOfResults || 5
   // TODO: The term frequencies could be saved in a database
   function calculateOverallTermFrequency (cb) {
     var counter = createCountStream()
@@ -46,11 +51,11 @@ module.exports = function (issuesdb, indexdb, issue, cb) {
         return a[1] < b[1]
       })
     if (!result[0]) return
-    var keywords = result.slice(0, 8)
+    var keywords = result.slice(0, numberOfKeywords)
       .map(function (token) {
         if (token) return token[0]
       })
-    search(indexdb, issuesdb, keywords, 11, function (err, issues) {
+    search(indexdb, issuesdb, keywords, numberOfResults, function (err, issues) {
       if (err) return cb(err)
       cb(null, issues, keywords)
     })
@@ -71,7 +76,6 @@ function createCountStream () {
   })
   return transform
 }
-
 
 function countValues (tokens) {
   var termFrequencies = {}

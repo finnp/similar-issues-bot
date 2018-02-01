@@ -1,7 +1,7 @@
-const level = require('level')
-const sublevel = require('level-spaces')
 const path = require('path')
-const pad = require('./lib/util').pad
+const level = require('level')
+const mustache = require('mustache')
+const sublevel = require('level-spaces')
 
 const similar = require('./similar')
 const db = level(path.join(__dirname, '/db'))
@@ -9,26 +9,28 @@ const db = level(path.join(__dirname, '/db'))
 const indexdb = sublevel(db, 'index')
 const issuesdb = sublevel(db, 'issues')
 
-
-var template = (issueList, keywords) => (`
+const defaultTemplate = `
 These issues might be related:
 
-${issueList}
+{{#issues}}
+- {{title}} #{{number}}
+{{/issues}}
 
-Bases on this keywords: ${keywords}
-`)
+Based on this keywords: {{keywordList}}
+`
 
 module.exports = robot => {
   robot.on('issues.opened', async context => {
-    const issue = context.payload.issue
-    similar(issuesdb, indexdb, issue, (err, issues, keywords) => {
+    const opts = {
+      issuesdb,
+      indexdb,
+      issue: context.payload.issue
+    }
+    similar(opts, (err, issues, keywords) => {
       if (err) return console.log(err)
-      const issueList = issues
-        .map(issue => `- ${issue.title} #${issue.number}`)
-        .join('\n')
-      context.github.issues.createComment(context.issue({
-        body: template(issueList, keywords.join(', '))
-      }))
+      const keywordList = keywords.join(', ')
+      const body = mustache.render(defaultTemplate, {issues, keywordList})
+      context.github.issues.createComment(context.issue({body}))
     })
   })
 }
