@@ -19,13 +19,15 @@ Based on this keywords: {{keywordList}}
 `
 
 module.exports = robot => {
-  nodeschool.repeatedUpdate(process.env.GH_KEY)
-    .on('log', function (log) {
-      robot.log(log)
-    })
-    .on('error', function (err) {
-      robot.log.error(err)
-    })
+  robot.on('installation_repositories.added', async context => {
+    nodeschool.repeatedUpdate(process.env.GH_KEY)
+      .on('log', function (log) {
+        robot.log(log)
+      })
+      .on('error', function (err) {
+        robot.log.error(err)
+      })
+  })
 
   robot.on('issues.opened', async context => {
     const opts = {
