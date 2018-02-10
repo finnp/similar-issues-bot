@@ -1,12 +1,15 @@
 const path = require('path')
 const mustache = require('mustache')
+const level = require('level')
+const sublevel = require('subleveldown')
+const eventToPromise = require('event-to-promise')
+const similarIssues = require('./')
 
-const similar = require('./similar')
+const db = level(path.join(__dirname, '/db'))
 
-const nodeschool = require('./')({
-  storagePath: path.join(__dirname, '/db'),
-  repo: 'nodeschool/discussions'
-})
+function similarIssuesForRepo (repo) {
+  return similarIssues({level: sublevel(db, repo), repo})
+}
 
 const defaultTemplate = `
 These issues might be related:
@@ -18,24 +21,26 @@ These issues might be related:
 Based on this keywords: {{keywordList}}
 `
 
-module.exports = robot => {
-  robot.on('installation_repositories.added', async context => {
-    nodeschool.repeatedUpdate(process.env.GH_KEY)
-      .on('log', function (log) {
-        robot.log(log)
-      })
-      .on('error', function (err) {
-        robot.log.error(err)
-      })
-  })
+const repoHandlers = {}
 
+module.exports = robot => {
   robot.on('issues.opened', async context => {
-    const opts = {
-      issuesdb,
-      indexdb,
-      issue: context.payload.issue
+    const repoName = context.payload.repository.full_name
+    let repoHandler = repoHandlers[repoName]
+    if (!repoHandler) {
+      robot.log(`New repository: ${repoName}`)
+      repoHandler = similarIssuesForRepo(repoName)
+      repoHandlers[repoName] = repoHandler
+
+      const repeatUpdate = repoHandler.repeatedUpdate(context.github)
+      repeatUpdate.on('log', log => robot.log(`${repoName}: ${log}`))
+      repeatUpdate.on('error', err => robot.log.error(err))
+
+      await eventToPromise(repeatUpdate, 'complete')
     }
-    nodeschool.similar(opts, (err, issues, keywords) => {
+
+    const issue = context.payload.issue
+    repoHandler.similar(issue, (err, issues, keywords) => {
       if (err) return context.log(err)
       const keywordList = keywords.join(', ')
       const body = mustache.render(defaultTemplate, {issues, keywordList})

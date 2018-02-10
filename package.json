@@ -12,17 +12,19 @@
   "license": "ISC",
   "dependencies": {
     "concat-stream": "^1.6.0",
+    "event-to-promise": "^0.8.0",
     "level": "^1.4.0",
     "level-spaces": "^2.0.1",
     "mustache": "^2.3.0",
+    "pify": "^3.0.0",
     "probot": "^5.0.0",
     "pump": "^1.0.1",
-    "request-all-pages": "^0.3.1",
     "run-parallel": "^1.1.6",
     "sorted-intersect-stream": "^2.0.1",
     "sorted-merge-stream": "^1.0.1",
     "stream-sort": "^1.1.0",
-    "stream-wrapper": "^0.1.2"
+    "stream-wrapper": "^0.1.2",
+    "subleveldown": "^2.1.0"
   },
   "devDependencies": {
     "standard": "^10.0.3"

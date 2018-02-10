@@ -1,4 +1,4 @@
-var sublevel = require('level-spaces')
+var sublevel = require('subleveldown')
 var EventEmitter = require('events')
 var level = require('level')
 
@@ -18,9 +18,12 @@ module.exports = function (opts) {
 
   return {
     search: search.bind(this, indexdb, issuesdb),
-    similar: function (opts, cb) {
-      opts.indexdb = indexdb
-      opts.issuesdb = issuesdb
+    similar: function (issue, cb) {
+      const opts = {
+        indexdb,
+        issuesdb,
+        issue
+      }
       return similar(opts, cb)
     },
     update: update,
@@ -38,25 +41,25 @@ module.exports = function (opts) {
     return issuesdb.createValueStream(opts)
   }
 
-  function update (githubKey, bus, cb) {
+  function update (github, bus, cb) {
     bus.emit('log', 'Update start.')
     bus.emit('log', 'Downloading...')
-    download(issuesdb, githubKey, repo, function (err) {
-      if (err) return cb(err)
+    download(github, issuesdb, repo).then(function () {
       bus.emit('log', 'Creating the index...')
       createIndex(indexdb, issuesdb, keysdb, function (err) {
         if (err) return cb(err)
         bus.emit('log', 'Update done.')
+        bus.emit('complete')
         cb()
       })
-    })
+    }).catch(cb)
   }
 
-  function repeatedUpdate (githubKey, interval) {
+  function repeatedUpdate (github, interval) {
     var bus = new EventEmitter()
     interval = interval || 60 * 60 * 1000
     function loop () {
-      update(githubKey, bus, function (err) {
+      update(github, bus, function (err) {
         if (err) bus.emit('error', err)
         setTimeout(loop, interval)
       })

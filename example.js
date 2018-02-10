@@ -1,5 +1,5 @@
 var level = require('level')
-var sublevel = require('level-spaces')
+var sublevel = require('subleveldown')
 var path = require('path')
 var pad = require('./lib/util').pad
 
