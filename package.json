@@ -12,11 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "concat-stream": "^1.6.0",
-    "http-hash-router": "^1.1.0",
     "level": "^1.4.0",
     "level-spaces": "^2.0.1",
     "mustache": "^2.3.0",
-    "ndjson": "^1.4.3",
     "probot": "^5.0.0",
     "pump": "^1.0.1",
     "request-all-pages": "^0.3.1",

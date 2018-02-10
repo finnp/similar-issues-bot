@@ -1,10 +1,12 @@
-var EventEmitter = require('events')
-var download = require('./lib/download')
-var createIndex = require('./lib/create-index')
-var pad = require('./lib/util').pad
-var search = require('./lib/search')
-var level = require('level')
 var sublevel = require('level-spaces')
+var EventEmitter = require('events')
+var level = require('level')
+
+var createIndex = require('./lib/create-index')
+var download = require('./lib/download')
+var similar = require('./lib/similar')
+var search = require('./lib/search')
+var pad = require('./lib/util').pad
 
 module.exports = function (opts) {
   var db = opts.level || level(opts.storagePath)
@@ -16,6 +18,11 @@ module.exports = function (opts) {
 
   return {
     search: search.bind(this, indexdb, issuesdb),
+    similar: function (opts, cb) {
+      opts.indexdb = indexdb
+      opts.issuesdb = issuesdb
+      return similar(opts, cb)
+    },
     update: update,
     repeatedUpdate: repeatedUpdate,
     getIssues: getIssues

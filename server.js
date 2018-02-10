@@ -1,4 +1,3 @@
-var Router = require('http-hash-router')
 var ndjson = require('ndjson')
 var pump = require('pump')
 var http = require('http')

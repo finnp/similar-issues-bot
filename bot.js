@@ -1,13 +1,12 @@
 const path = require('path')
-const level = require('level')
 const mustache = require('mustache')
-const sublevel = require('level-spaces')
 
 const similar = require('./similar')
-const db = level(path.join(__dirname, '/db'))
 
-const indexdb = sublevel(db, 'index')
-const issuesdb = sublevel(db, 'issues')
+const nodeschool = require('./')({
+  storagePath: path.join(__dirname, '/db'),
+  repo: 'nodeschool/discussions'
+})
 
 const defaultTemplate = `
 These issues might be related:
@@ -20,14 +19,22 @@ Based on this keywords: {{keywordList}}
 `
 
 module.exports = robot => {
+  nodeschool.repeatedUpdate(process.env.GH_KEY)
+    .on('log', function (log) {
+      robot.log(log)
+    })
+    .on('error', function (err) {
+      robot.log.error(err)
+    })
+
   robot.on('issues.opened', async context => {
     const opts = {
       issuesdb,
       indexdb,
       issue: context.payload.issue
     }
-    similar(opts, (err, issues, keywords) => {
-      if (err) return console.log(err)
+    nodeschool.similar(opts, (err, issues, keywords) => {
+      if (err) return context.log(err)
       const keywordList = keywords.join(', ')
       const body = mustache.render(defaultTemplate, {issues, keywordList})
       context.github.issues.createComment(context.issue({body}))
