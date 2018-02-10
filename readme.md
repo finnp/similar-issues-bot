@@ -1,8 +1,8 @@
-# nodeschool-questions
+# similar-issues-bot
 
-Environment variables: `GH_KEY` and `PORT`
-
-Start server with `node server.js`.
+This GitHub bot will reply to new issues on a repository with a list of
+similar seeming issues. Useful for projects that get a lot of issues/questions
+that might have already been answered.
 
 
 ## Tables (Sublevels)
