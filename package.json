@@ -22,7 +22,6 @@
     "sorted-intersect-stream": "^2.0.1",
     "sorted-merge-stream": "^1.0.1",
     "stream-sort": "^1.1.0",
-    "stream-wrapper": "^0.1.2",
     "subleveldown": "github:finnp/subleveldown#update-level"
   },
   "devDependencies": {
