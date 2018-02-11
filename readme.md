@@ -9,7 +9,7 @@ You can configure the bot by creating a `similar-issues.yml` file in the `.githu
 of your repository.
 
 Here is an example `similar-issues.yml`:
-```
+```yml
 template: |
   Check this out 🤖:
   {{#issues}}
