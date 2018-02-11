@@ -5,6 +5,19 @@ similar seeming issues. Useful for projects that get a lot of issues/questions
 that might have already been answered.
 
 
+You can configure the bot by creating a `similar-issues.yml` file in the `.github` directory
+of your repository.
+
+Here is an example `similar-issues.yml`:
+```
+template: |
+  Check this out 🤖:
+  {{#issues}}
+  - {{title}} #{{number}}
+  {{/issues}}
+```
+
+
 ## Tables (Sublevels)
 ### index
 

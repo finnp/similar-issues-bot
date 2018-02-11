@@ -4,6 +4,7 @@ const level = require('level')
 const sublevel = require('subleveldown')
 const eventToPromise = require('event-to-promise')
 const similarIssues = require('./')
+const fs = require('fs')
 
 const db = level(path.join(__dirname, '/db'))
 
@@ -11,20 +12,15 @@ function similarIssuesForRepo (repo) {
   return similarIssues({level: sublevel(db, repo), repo})
 }
 
-const defaultTemplate = `
-These issues might be related:
-
-{{#issues}}
-- {{title}} #{{number}}
-{{/issues}}
-
-Based on this keywords: {{keywordList}}
-`
+const defaultConfig = {
+  template: fs.readFileSync(path.join(__dirname, '/template.md'), 'utf8')
+}
 
 const repoHandlers = {}
 
 module.exports = robot => {
   robot.on('issues.opened', async context => {
+    const config = await context.config('similar-issues.yml', defaultConfig)
     const repoName = context.payload.repository.full_name
     let repoHandler = repoHandlers[repoName]
     if (!repoHandler) {
@@ -43,7 +39,7 @@ module.exports = robot => {
     repoHandler.similar(issue, (err, issues, keywords) => {
       if (err) return context.log(err)
       const keywordList = keywords.join(', ')
-      const body = mustache.render(defaultTemplate, {issues, keywordList})
+      const body = mustache.render(config.template, {issues, keywordList})
       context.github.issues.createComment(context.issue({body}))
     })
   })
