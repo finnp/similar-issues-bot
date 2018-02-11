@@ -14,7 +14,6 @@
     "concat-stream": "^1.6.0",
     "event-to-promise": "^0.8.0",
     "level": "^1.4.0",
-    "level-spaces": "^2.0.1",
     "mustache": "^2.3.0",
     "pify": "^3.0.0",
     "probot": "^5.0.0",

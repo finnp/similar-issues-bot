@@ -5,7 +5,6 @@ var level = require('level')
 var createIndex = require('./lib/create-index')
 var download = require('./lib/download')
 var similar = require('./lib/similar')
-var search = require('./lib/search')
 var pad = require('./lib/util').pad
 
 module.exports = function (opts) {
@@ -17,7 +16,6 @@ module.exports = function (opts) {
   var keysdb = sublevel(db, 'keys')
 
   return {
-    search: search.bind(this, indexdb, issuesdb),
     similar: function (issue, cb) {
       const opts = {
         indexdb,

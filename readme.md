@@ -10,7 +10,7 @@ that might have already been answered.
 
 Find issues for keywords, sorted by score.
 
-- Key: `${keyword}~${score}-${issueNumber}`, e.g. `chrome~00092-1916`
+- Key: `${keyword}~${issueNumber}`, e.g. `chrome~1916`
 - Value `${issueTableKey}`, e.g. `01916`
 
 ### issue
@@ -26,4 +26,4 @@ Relation from issue numbers to their index entries. For deleting the respective
 index entries from the table for a specific isssue.
 
 - Key: `${issueNumber}`, e.g. `999`
-- Value: `${indexKeysJSON}`, e.g. `'["m~00096-999","sure~00096`
+- Value: `${indexKeysJSON}`, e.g. `'["m~999","00096`
