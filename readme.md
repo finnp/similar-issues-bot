@@ -19,6 +19,9 @@ template: |
 
 
 ## Tables (Sublevels)
+
+Overview on the sublevels that exist per repository:
+
 ### index
 
 Find issues for keywords, sorted by score.
@@ -40,3 +43,8 @@ index entries from the table for a specific isssue.
 
 - Key: `${issueNumber}`, e.g. `999`
 - Value: `${indexKeysJSON}`, e.g. `'["m~999","00096`
+
+## Thanks
+
+Parts of this projects are heavily inspired (aka copied) from [node-modules](https://github.com/mafintosh/node-modules)
+by [mafintosh](https://github.com/mafintosh).
