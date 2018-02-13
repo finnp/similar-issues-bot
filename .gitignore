@@ -2,5 +2,5 @@
 db/
 node_modules/
 package-lock.json
-local.pem
+*.pem
 todo.md
