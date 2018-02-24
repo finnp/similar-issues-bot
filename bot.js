@@ -38,6 +38,7 @@ module.exports = robot => {
     const issue = context.payload.issue
     repoHandler.similar(issue, (err, issues, keywords) => {
       if (err) return context.log(err)
+      context.log('Issues received')
       const keywordList = keywords.join(', ')
       const body = mustache.render(config.template, {issues, keywordList})
       context.github.issues.createComment(context.issue({body}))
