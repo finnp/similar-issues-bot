@@ -30,6 +30,8 @@ module.exports = robot => {
     context.log('Get similar issues')
     const {issues, keywords} = await similarIssuesRepo.similar(context.payload.issue)
 
+    if (issues.length === 0) return context.log('No similar issues found')
+
     const keywordList = keywords.join(', ')
     const body = mustache.render(config.template, {issues, keywordList})
     context.github.issues.createComment(context.issue({body}))
