@@ -17,33 +17,6 @@ template: |
   {{/issues}}
 ```
 
-
-## Tables (Sublevels)
-
-Overview on the sublevels that exist per repository:
-
-### index
-
-Find issues for keywords, sorted by score.
-
-- Key: `${keyword}~${issueNumber}`, e.g. `chrome~1916`
-- Value `${issueTableKey}`, e.g. `01916`
-
-### issue
-
-Get the full github info for an issue.
-
-- Key: `${zeroFilledIssueNumber}`, e.g. `02258`
-- Value: `${issueObjectJSON}`, e.g. `{"url":"https://api.gi...`
-
-### keys
-
-Relation from issue numbers to their index entries. For deleting the respective
-index entries from the table for a specific isssue.
-
-- Key: `${issueNumber}`, e.g. `999`
-- Value: `${indexKeysJSON}`, e.g. `'["m~999","00096`
-
 ## Thanks
 
 Parts of this projects are heavily inspired (aka copied) from [node-modules](https://github.com/mafintosh/node-modules)
