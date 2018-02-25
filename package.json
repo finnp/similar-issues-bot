@@ -12,18 +12,17 @@
   "license": "ISC",
   "dependencies": {
     "concat-stream": "^1.6.0",
-    "event-to-promise": "^0.8.0",
-    "level": "^2.1.2",
+    "go-for-it": "^1.0.2",
+    "level": "^3.0.0",
     "mustache": "^2.3.0",
     "pify": "^3.0.0",
-    "probot": "^5.0.0",
+    "probot": "^5.0.1",
     "pump": "^3.0.0",
-    "run-parallel": "^1.1.6",
     "sorted-merge-stream": "^1.0.1",
     "stream-sort": "^1.1.0",
     "subleveldown": "github:finnp/subleveldown#update-level"
   },
   "devDependencies": {
-    "standard": "^10.0.3"
+    "standard": "^11.0.0"
   }
 }

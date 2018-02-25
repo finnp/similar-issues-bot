@@ -1,68 +1,39 @@
-var sublevel = require('subleveldown')
-var EventEmitter = require('events')
-var level = require('level')
+const sublevel = require('subleveldown')
+const level = require('level')
 
-var createIndex = require('./lib/create-index')
-var download = require('./lib/download')
-var similar = require('./lib/similar')
-var pad = require('./lib/util').pad
+const createIndex = require('./lib/create-index')
+const download = require('./lib/download')
+const similar = require('./lib/similar')
 
-module.exports = function (opts) {
-  var db = opts.level || level(opts.storagePath)
-  var repo = opts.repo
+module.exports = Repository
 
-  var indexdb = sublevel(db, 'index')
-  var issuesdb = sublevel(db, 'issues')
-  var keysdb = sublevel(db, 'keys')
+function Repository (opts) {
+  const db = opts.level || level(opts.storagePath)
 
-  return {
-    similar: function (issue, cb) {
-      const opts = {
-        indexdb,
-        issuesdb,
-        issue
-      }
-      return similar(opts, cb)
-    },
-    update: update,
-    repeatedUpdate: repeatedUpdate,
-    getIssues: getIssues
-  }
+  this.github = opts.github
+  this.repo = opts.repo
+  this.indexdb = sublevel(db, 'index')
+  this.issuesdb = sublevel(db, 'issues')
+  this.keysdb = sublevel(db, 'keys')
+}
 
-  function getIssues (from, to) {
-    var opts = {}
-    opts.valueEncoding = 'json'
-    opts.keyEncoding = 'utf8'
-    if (from) opts.gte = pad(from)
-    if (to) opts.lte = pad(to)
+Repository.prototype.download = function () {
+  return download(this.github, this.issuesdb, this.repo)
+}
 
-    return issuesdb.createValueStream(opts)
-  }
+Repository.prototype.createIndex = function () {
+  return createIndex(this.indexdb, this.issuesdb, this.keysdb)
+}
 
-  function update (github, bus, cb) {
-    bus.emit('log', 'Update start.')
-    bus.emit('log', 'Downloading...')
-    download(github, issuesdb, repo).then(function () {
-      bus.emit('log', 'Creating the index...')
-      createIndex(indexdb, issuesdb, keysdb, function (err) {
-        if (err) return cb(err)
-        bus.emit('log', 'Update done.')
-        bus.emit('complete')
-        cb()
-      })
-    }).catch(cb)
-  }
+Repository.prototype.similar = function (issue) {
+  return similar({
+    indexdb: this.indexdb,
+    issuesdb: this.issuesdb,
+    issue
+  })
+}
 
-  function repeatedUpdate (github, interval) {
-    var bus = new EventEmitter()
-    interval = interval || 60 * 60 * 1000
-    function loop () {
-      update(github, bus, function (err) {
-        if (err) bus.emit('error', err)
-        setTimeout(loop, interval)
-      })
-    }
-    process.nextTick(loop)
-    return bus
-  }
+Repository.prototype.update = async function () {
+  await this.download()
+  await this.createIndex()
 }
